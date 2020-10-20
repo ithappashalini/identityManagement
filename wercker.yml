@@ -1,0 +1,41 @@
+box: maven:latest
+command-timeout: 30
+no-response-timeout: 15
+
+
+build:
+  base-path: /go/src/github.com/wercker/wercker
+  steps:
+    - xenoterracide/maven:
+        goals: clean package spring-boot:repackage
+        skiptests: "true"
+    - script:
+      name: Cleanup maven local repo
+      code: |
+        find ${WERCKER_CACHE_DIR} -type d -name "*SNAPSHOT" -ls -exec rm -rf {} +
+        du -hs ${WERCKER_CACHE_DIR}/* | sort -h
+        echo "------"
+        du -hs * | sort -h
+    - script: 
+        name: copy package to output
+        code: |
+              cp ./target/*.jar $WERCKER_OUTPUT_DIR/IdentityManagementApi.jar
+                           
+push-to-oci-registry:
+  box:
+    id: openjdk
+    tag: 8-jre-alpine
+  steps:
+    - script:
+        name: Move the jar to current dir
+        code: |
+            mv $WERCKER_SOURCE_DIR/IdentityManagementApi.jar /IdentityManagementApi.jar
+    - internal/docker-push: 
+        username: $OCIR_USERNAME
+        password: $OCIR_PASSWORD    
+        repository: $OCIR_REPOSITORY 
+        tag: latest
+        registry: https://$OCIR_REGISTRY/
+        volumes: /tmp
+        cmd: java -jar /IdentityManagementApi.jar
+        ports: 8096

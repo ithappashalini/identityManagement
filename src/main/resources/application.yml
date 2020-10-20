@@ -1,0 +1,311 @@
+# Maximum amount of worker threads. Default value is 200
+server:
+  tomcat:
+    max-threads: 1000
+  port: 8096
+  ssl:
+    enabled: false
+    protocol: TLS
+    enabled-protocols:
+    - TLSv1.2
+
+management:
+  add-application-context-header: false
+
+logging:
+  config: file:///app/bin/identityManagementApi/logback.xml
+  
+endpoints:
+  sensitive: false
+  enabled: true
+  info:
+    sensitive: false
+
+spring:
+  cloud:
+    config:
+      enabled: false
+    circuit:
+      breaker:
+        enabled: true
+  rest-context:
+    path: /api/v1
+
+  jackson:
+    date-format: com.rheal.security.idm.commons.config.RFC3339DateFormat
+    default-property-inclusion: NON_EMPTY
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+  application:
+    name: IDENTITY-MANAGEMENT
+
+    
+client:
+  web:
+    service:
+      enabled: true
+
+http:
+  pool:
+    config:
+      max_total: 300
+      max_per_route: 200
+      request_timeout: 5000
+      socket_timeout: 2000
+      connection_timeout: 2000
+    
+ldap:
+  app_pid_account:
+    search_base: OU=internal,DC=maxcrc,DC=com
+    filter: (uid=%s)
+  connection:
+    factory:
+      testOnBorrow: true
+      testOnReturn: false
+      testWhileIdle: true
+      maxActive: 30
+      maxIdle: 10
+      maxTotal: 50
+      maxWait: 500
+      minIdle: 1
+      numTestsPerEvictionRun: 25
+      minEvictableIdleTimeMillis: 240000
+      timeBetweenEvictionRunsMillis: 120000
+  read_timeout: 3000
+  connect_timeout: 1000
+
+  app_config:
+    default_settings:
+      container_base: OU=users,DC=maxcrc,DC=com
+      operation_settings:
+      - name: updatePassword
+        search_filter: (cn=%s)
+        read_attrs: distinguishedName,company,cn,uid
+      - name: getGroupMembers
+        search_filter: (cn=%s)
+        read_attrs: distinguishedName, memberOf
+      - name: deleteUser
+        search_filter: (cn=%s)
+        read_attrs: distinguishedName
+      - name: updateUserProfile
+        search_filter: (cn=%s)
+        read_attrs: distinguishedName,,company,givenName,displayName,sn
+      - name: getUserProfile
+        search_filter: (cn=%s)
+        read_attrs: distinguishedName,cn,company,givenName,sn,uid
+      - name: updateUserID
+        search_filter: (cn=%s)
+        read_attrs: distinguishedName,company,cn,uid
+      - name: searchOIMUsers
+        search_filter:
+        read_attrs: distinguishedName,cn,company,givenName,sn,uid
+        parameters:
+          SearchSizeLimit: 25
+          SearchSizeLimit_Company: 500
+    settings:
+    - app_id: rheal
+      container_base: ou=rheal,ou=users,dc=maxcrc,dc=com
+      filters:
+        duplicate_user: (uid=%s)
+       
+app:
+  config: 
+
+    default_Settings:
+      app_id: default
+      password:
+            management:
+              enable_history: false
+              history_num: 10
+            validity:
+              enable: false
+              days: 60
+            complexity:
+             enable: true
+             min_length: 8
+             min_alphabets: 1
+             min_numeric: 1
+             notIncludeUserIdCheck: true
+    error_messages:
+      - id : E001
+        message : User Not Found
+        descriptions :
+          any : User Not Found
+      
+      - id : E002
+        message : Error Searching User
+        descriptions :
+          any : Error Searching User 
+          
+      - id : E003
+        message : User GUID is missing
+        descriptions :
+          any : User GUID is required but missing
+        
+      - id : E004
+        message : Application Name is missing
+        descriptions :
+          any : Application Name is required but missing
+        
+      - id : E005
+        message : New Password is missing
+        descriptions :
+          any : New Password is required but missing
+        
+      - id : E006
+        message : Old UserID is not correct
+        descriptions :
+          any : Validation failed with old userID passed in request
+        
+      - id : E007
+        message : New UserID is missing
+        descriptions :
+          any : New UserID is required but missing
+        
+      - id : E008
+        message : UserID is missing
+        descriptions :
+          any : User ID is required but missing
+        
+      - id : E009
+        message : companyID is missing
+        descriptions :
+          any : Company ID is required but missing
+
+      - id : E010 
+        message : Password is missing         
+        descriptions :
+          any : Password is required but missing
+        
+      - id : E011
+        message : UserID Already Exists  
+        descriptions :
+          any : New User ID already exists
+        
+      - id : E012 
+        message : Insufficient Rights
+        descriptions :
+          any : Insufficient Access rights to perform the operation
+        
+      - id : E013
+        message : Error Creating User  
+        descriptions :
+          any : Initials can be of maximum 6 characters in length
+        
+      - id : E014
+        message : Invalid Application Type 
+        descriptions :
+          any : is not a valid value for ApplicationType.
+        
+      - id : E015
+        message : Application Type is missing  
+        descriptions :
+          any : Application Type is required but missing   
+        
+      - id : E016
+        message : Error getting User Profile 
+        descriptions :
+          any : Exception Details
+        
+      - id : E017 
+        message : New Password in history list  
+        descriptions :
+          any : New password is in user’s password history list
+        
+      - id : E018 
+        message : Error updating Password 
+        descriptions :
+          any : Error updating Password
+        
+      - id : E019 
+        message : Password is not correct 
+        descriptions :
+          any : Authentication failed with old password passed in request
+        
+      - id : E020
+        message : Error updating UserID 
+        descriptions :
+          any : Error updating UserID
+        
+      - id : E021
+        message : Error updating User Profile 
+        descriptions :
+          any : Error updating User Profile 
+  
+      - id : E022 
+        message : New UserID is not unique  
+        descriptions :
+          any : New User ID already exists
+        
+      - id : E023
+        message : Error deleting User Profile
+        descriptions :
+          any : Error deleting UserProfile
+               
+      - id : E100 
+        message : ServiceAccount ID is missing 
+        descriptions :
+          any : ServiceAccount ID is required but missing
+        
+      - id : E101 
+        message : ServiceAccount Password is missing 
+        descriptions :
+          any : ServiceAccount Password is required but missing
+        
+      - id : E102
+        message : ServiceAccount failed to be authenticated  
+        descriptions :
+          any : ServiceAccount ID/Password Validation failed
+        
+      - id : E103
+        message : Password does not meet minimum character length requirement. 
+        descriptions :
+          any : Password should meet minimum character length requirements
+        
+      - id : E104
+        message : Password does not meet minimum alphabet characters requirement.  
+        descriptions :
+          any : Password should meet minimum alphabet characters requirements
+        
+      - id : E105
+        message : Password does not meet minimum numeric characters requirement. 
+        descriptions :
+          any : Password should meet minimum numeric characters requirements
+        
+      - id : E106
+        message : Password does not meet restricted password requirement.  
+        descriptions :
+          any : Password cannot contain the entire userID
+      - id : E024
+        message : Error updating User Profile 
+        descriptions :
+          any : Error updating User Profile
+      - id : E025
+        message : Error connecting to backend 
+        descriptions :
+          any : Connection to backend failed. 
+      - id : E026
+        message : Error creating user
+        descriptions :
+          any : error creating user profile  
+      - id : E027
+        message : invalid format for date input
+        descriptions :
+          any : Date provided in in invalid format    
+      - id : E028
+        message : Invalid Application Name 
+        descriptions :
+          any : is not a valid value for ApplicationName.
+      - id : E029
+        message : UserID Already Exists  
+        descriptions :
+          any : New User ID already exists 
+      - id : E030 
+        message : Password is missing         
+        descriptions :
+          any : Password is required but missing
+      - id : E000
+        message : Application error
+        descriptions:
+          any :   unhandled application error while performing the operation   
+         

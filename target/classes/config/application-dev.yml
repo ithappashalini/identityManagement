@@ -1,0 +1,25 @@
+logging:
+  config: classpath:logging/logback-dev.xml
+
+app:
+  config:
+    service_accounts:
+    - user_id:  AUTHADMIN
+      access_control_list:
+      - app_id: rheal
+        allow_create_attributes: "*"
+        allow_modify_attributes: "*"
+        allow_read: true
+        allow_delete: true
+
+ldap:
+  service:
+    host: ldap://11.0.0.21
+    port: 389
+    dn: CN=authadmin,OU=internal,DC=maxcrc,DC=com
+    password: master01
+
+log:
+  api:
+    messages:
+      enabled: true
